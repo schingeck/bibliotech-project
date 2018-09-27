@@ -1,0 +1,111 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>book overview test</title>
+
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+    <script src="../node_modules/wct-browser-legacy/browser.js"></script>
+
+    <script>
+        /**
+         * [polymer-root-path]
+         *
+         * Leave this line unchanged if you intend to serve your app from the root
+         * path (e.g., with URLs like `my.domain/` and `my.domain/view1`).
+         *
+         * If you intend to serve your app from a non-root path (e.g., with URLs
+         * like `my.domain/my-app/` and `my.domain/my-app/view1`), edit this line
+         * to indicate the path from which you'll be serving, including leading
+         * and trailing slashes (e.g., `/my-app/`).
+         */
+        window.MyAppGlobals = { rootPath: '/' };
+
+        // Load and register pre-caching Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('service-worker.js', {
+                    scope: MyAppGlobals.rootPath
+                });
+            });
+        }
+    </script>
+
+    <!-- Import the element to test -->
+    <script type="module" src="../src/components/book-overview/book-overview.js"></script>
+
+</head>
+<body>
+<test-fixture id="bookOverview">
+
+    <template>
+        <book-overview></book-overview>
+    </template>
+
+</test-fixture>
+
+<script type="module">
+    describe('book overview test', function() {
+        it('Should show contributors', function(done) {
+            var myView = fixture('bookOverview');
+            myView.contributors = ["Ryan Schingeck", "Joe Test"];
+            flush(function () {
+                assert.equal(myView.shadowRoot.querySelector("book-overview-contributors").shadowRoot.querySelector(".BookOverview__item").innerText,
+                    "| Ryan Schingeck, Joe Test");
+
+                done();
+            });
+        });
+
+        it('Should show ISBN', function(done) {
+            var myView = fixture('bookOverview');
+            myView.isbn = "TEST909";
+            flush(function () {
+                assert.equal(myView.shadowRoot.querySelector("book-overview-isbn").shadowRoot.querySelector(".BookOverview__item").innerText,
+                    "| TEST909");
+
+                done();
+            });
+        });
+
+        it('Should show publisher', function(done) {
+            var myView = fixture('bookOverview');
+            myView.publisher = "Penguin";
+            flush(function () {
+                assert.equal(myView.shadowRoot.querySelector("book-overview-publisher").shadowRoot.querySelector(".BookOverview__item").innerText,
+                    "| Penguin");
+
+                done();
+            });
+        });
+
+        it('Should show cover', function(done) {
+            var myView = fixture('bookOverview');
+            var cover = myView.shadowRoot.querySelector("book-overview-cover");
+            myView.coverUrl = "https://images.pexels.com/photos/51342/books-education-school-literature-51342.jpeg?auto=compress&cs=tinysrgb&h=350";
+            myView.title = "My Test Book";
+            flush(function () {
+                assert.equal(cover.shadowRoot.querySelector("iron-image").src,
+                    "https://images.pexels.com/photos/51342/books-education-school-literature-51342.jpeg?auto=compress&cs=tinysrgb&h=350");
+
+                assert.equal(cover.shadowRoot.querySelector(".BookOverviewCover__title").innerText, "My Test Book");
+
+                done();
+            });
+        });
+    });
+</script>
+</body>
+</html>

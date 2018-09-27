@@ -1,0 +1,109 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>app view</title>
+
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+    <script src="../node_modules/wct-browser-legacy/browser.js"></script>
+
+    <script>
+        /**
+         * [polymer-root-path]
+         *
+         * Leave this line unchanged if you intend to serve your app from the root
+         * path (e.g., with URLs like `my.domain/` and `my.domain/view1`).
+         *
+         * If you intend to serve your app from a non-root path (e.g., with URLs
+         * like `my.domain/my-app/` and `my.domain/my-app/view1`), edit this line
+         * to indicate the path from which you'll be serving, including leading
+         * and trailing slashes (e.g., `/my-app/`).
+         */
+        window.MyAppGlobals = { rootPath: '/' };
+
+        // Load and register pre-caching Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('service-worker.js', {
+                    scope: MyAppGlobals.rootPath
+                });
+            });
+        }
+    </script>
+
+    <!-- Import the element to test -->
+    <script type="module" src="../src/views/app.js"></script>
+
+</head>
+<body>
+<test-fixture id="appViewDetails">
+    <template>
+        <bibliotech-app></bibliotech-app>
+    </template>
+</test-fixture>
+
+<script type="module">
+    describe('bibliotech app tests', function() {
+        var myView;
+        beforeEach(function() {
+            myView = fixture('appViewDetails');
+        });
+        it('Page should be details', function(done) {
+            var ironPages = myView.shadowRoot.querySelector(".app__pages");
+
+
+            flush(function () {
+                assert.equal(ironPages.selected, "details");
+                assert.isTrue(myView.shadowRoot.querySelector("paper-item[name='details']").classList.contains("iron-selected"));
+                assert.isTrue(myView.shadowRoot.querySelector("book-landing-view").classList.contains("iron-selected"));
+                done();
+            });
+        });
+
+        it('Page should be copyright', function(done) {
+            var ironPages = myView.shadowRoot.querySelector(".app__pages");
+            myView.setAttribute("page", "toc");
+
+            flush(function () {
+                assert.equal(ironPages.selected, "toc");
+                assert.isTrue(myView.shadowRoot.querySelector("paper-item[name='toc']").classList.contains("iron-selected"));
+                assert.isTrue(myView.shadowRoot.querySelector("book-toc-view").classList.contains("iron-selected"));
+                done();
+            });
+        });
+
+        it('Page should be preface', function(done) {
+            var ironPages = myView.shadowRoot.querySelector(".app__pages");
+            myView.shadowRoot.querySelector("paper-item[name='preface']").click();
+
+            flush(function () {
+                assert.equal(ironPages.selected, "preface");
+                assert.isTrue(myView.shadowRoot.querySelector("paper-item[name='preface']").classList.contains("iron-selected"));
+                assert.isTrue(myView.shadowRoot.querySelector("book-preface-view").classList.contains("iron-selected"));
+                done();
+            });
+        });
+
+        it('Page is loading', function(done) {
+            myView.loading = true;
+            flush(function() {
+                assert.isTrue(myView.shadowRoot.querySelector("paper-spinner").active);
+                done();
+            });
+        });
+    });
+</script>
+</body>
+</html>
